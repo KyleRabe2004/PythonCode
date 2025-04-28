@@ -24,7 +24,7 @@ import importlib
 #   
 # Set the workspace to point to the geodatabase you are using for this lab
 
-arcpy.env.workspace = r"R:\2025\Spring\GEOG562\Instructors\kennedy_2025\Lab4\Lab4_arcproject_REK\Lab4_arcproject_REK.gdb" 
+arcpy.env.workspace = r"R:\2025\Spring\GEOG562\Students\rabeky\Lab4\lab4_arcproject_kcr\lab4_arcproject_kcr.gdb" 
 
 ############################################################################
 # Block 3:  We are going to work with the notion of extending raster objects
