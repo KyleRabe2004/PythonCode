@@ -30,36 +30,27 @@ class SmartRaster(arcpy.Raster):
             "n_bands": n_bands, 
             "pixelType": pixelType
         }
+    
+    def calculate_ndvi(self, band4_index=4, band3_index=3):
+        """Calculate NDVI using the NIR and Red bands."""
+        
+        okay = True
+        try:
+            # Import the Spatial Analyst module inside the method
+            from arcpy import sa
+            
+            # Get the NIR and Red bands
+            nir = sa.Raster(self.raster_path + f"/Band_{band4_index}")
+            red = sa.Raster(self.raster_path + f"/Band_{band3_index}")
 
+            # Calculate NDVI with a check to avoid division by zero
+            ndvi = sa.Con((nir + red) == 0, 0, (nir - red) / (nir + red))
 
-    # def calculate_ndvi(self,  band4_index = 4, band3_index = 3):
+        except Exception as e:
+            okay = False
+            ndvi = e   # Pass back the error if failed
 
-    #     """Calculate NDVI using the NIR and Red bands."""
-       
-    #     # set up an indicator about whether things work for later
-    #     okay = True
-
-    #     #embed everything in a try/except block
-    #     # First get the bands.  You can use the band numbers to get the bands
-    #     #   from the raster. 
-
-    #     # Your code:
-
-
-      
-
-
-
-    #     # Now we have the two bands.    
-    #     #   calculate (NIR-Red)/(NIR+red), which is the formula for
-    #     #   NDVI. 
-
-    #     #  Embed in a try/except block, so we can catch any errors that might occur
-
-    #     # Calculate the NDVI, and return an "okay, ndvi" if it worked, 
-    #     #   okay, e as the exception if it didn't.
-
-    #     #your code:
+        return okay, ndvi
 
 
        

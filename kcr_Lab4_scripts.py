@@ -68,19 +68,24 @@ print(r.metadata["bounds"])
 
 #  Again, you'll need to add code to the calculate_ndvi function
 
-okay, ndvi = r.calculate_ndvi()
+# Ensure l4 has a calculate_ndvi method that returns a tuple (boolean, raster)
+try:
+    okay, ndvi = r.calculate_ndvi()
+except AttributeError:
+    print("Error: 'calculate_ndvi' method is not defined for the object 'l4'.")
+    okay, ndvi = False, None
 
 # Assuming this is okay, write it to a new raster that we can use later
 out_ndvi_file = "NDVI_corv"
 if okay: 
     print("NDVI calculation successful.")
-    #Check first if the file already exists
+    # Check first if the file already exists
     if arcpy.Exists(out_ndvi_file):
-        print(f"{out_ndvi_file} already exists. ")
+        print(f"{out_ndvi_file} already exists.")
     # Write the NDVI raster to a new file
     try:
         ndvi.save(out_ndvi_file)
-        print(f"{out_ndvi_file}written successfully.")
+        print(f"{out_ndvi_file} written successfully.")
     except Exception as e:
         print(f"Error writing NDVI raster: {e}")    
 else:
@@ -92,7 +97,7 @@ else:
 #    are relevant -- band 4 and 3.  But we didn't
 #    set them here -- why did it work?
 
-#  Your answer:
+#  Your answer: It worked because the method has default values for band4_index and band3_index set to 4 and 3 respectively.
 
 
 
