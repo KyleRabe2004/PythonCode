@@ -1,7 +1,7 @@
 import arcpy
 import pandas as pd
 import matplotlib.pyplot as plt
-import Lab4_functions as l4
+import kcr_Lab4_functions as l4
 import importlib
 ## Testing
 
@@ -46,8 +46,8 @@ print(r.metadata["bounds"])
 # Question 1
 #  Why do we need to use the "super()" function in the definition of the SmartRaster?
 
-# Your answer:
-
+# Your answer: We use super() in the definition of the SmartRaster because it allows us to call the methods and properties of the parent class within the child class (SmartRaster).
+# This is important for extending the functionality of the parent class while still maintaining the structure and behavior of the original class.
 
 
 
