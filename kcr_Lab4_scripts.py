@@ -126,15 +126,17 @@ else:
 
 
 importlib.reload(l4)
-fc = "Corvallis_parcels" # remember you should have copied this into your workspace in Block 2.
 
-#Load the fc as a smart vector layer
+fc = "Corvallis_parcels"  # Path to the feature class
+out_ndvi_file = "NDVI_corv"  # Path to the NDVI raster file
+
+# Load the feature class as a smart vector layer
 smart_vector = l4.SmartVectorLayer(fc)
 
-# then get the zonal stats using the mean value
-smart_vector.zonal_stats_to_field(out_ndvi_file, output_field = "NDVI_mean")
+# Perform zonal statistics and write the mean NDVI values to a new field
+smart_vector.zonal_stats_to_field(out_ndvi_file, output_field="NDVI_mean")
 
-# then save it as a new feature class!
+# Save the updated feature class as a new file
 smart_vector.save_as("Corvallis_parcels_plusNDVI")
 
 
@@ -146,10 +148,7 @@ smart_vector.save_as("Corvallis_parcels_plusNDVI")
 #     reasonably?  Any observations or oddities? 
 # 
 
-#Your answer
-
-
-
+#Your answer: I see that there is NDVI data for the parcels on the Corvallis vector layer.
 
 
 
