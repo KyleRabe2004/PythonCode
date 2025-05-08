@@ -144,121 +144,57 @@ class SmartVectorLayer:
         except Exception as e:
             print(f"Error saving feature class: {e}")
 
-    
-    def zonal_stats_to_field(self, raster_path, statistic_type="MEAN", output_field="ZonalStat"):
+    def extract_to_pandas_df(self, fields=None):
         """
-        For each feature in the vector layer, calculates the zonal statistic from the raster
-        and writes it to a new field.
-        
+        Extracts the attribute table of the feature class into a Pandas DataFrame.
+
         Parameters:
-        - raster_path: path to the raster
-        - statistic_type: type of statistic ("MEAN", "SUM", etc.)
-        - output_field: name of the field to create to store results
+        - fields: List of field names to extract. If None, all fields (excluding geometry and OID) are extracted.
+
+        Returns:
+        - okay: Boolean indicating success or failure.
+        - df: Pandas DataFrame containing the extracted data.
         """
-        # Set up a tracking variable to track if things work
+        # Set up tracker variable
         okay = True
 
-        # Check if the output field already exists
-        existing_fields = [f.name for f in arcpy.ListFields(self.feature_class)]
-        if output_field in existing_fields:
-            print(f"Field '{output_field}' already exists. Skipping field creation.")
+        # First, get the list of fields to extract if the user did not pass them
+        if fields is None:  # If the user did not pass anything
+            # List all field names (excluding geometry and OID)
+            fields = [f.name for f in arcpy.ListFields(self.feature_class) if f.type not in ('Geometry', 'OID')]
         else:
-            try:
-                # Add the output field to the feature class
-                arcpy.AddField_management(self.feature_class, output_field, "DOUBLE")
-                print(f"Field '{output_field}' added to the feature class.")
-            except Exception as e:
-                print(f"Error adding field '{output_field}': {e}")
-                return False
+            # Check to make sure that the fields given are actually in the table,
+            # and make sure to exclude the geometry and OID.
+            true_fields = [f.name for f in arcpy.ListFields(self.feature_class) if f.type not in ('Geometry', 'OID')]
 
-    # Create a temporary table to hold zonal statistics
-        temp_table = "in_memory\\temp_zonal_stats"
-        if arcpy.Exists(temp_table):
-            arcpy.management.Delete(temp_table)
-        
-        # Calculate zonal statistics
+            # Accumulate the ones that do not match
+            disallowed = [user_f for user_f in fields if user_f not in true_fields]
+
+            # If the list is not empty, let the user know
+            if len(disallowed) != 0:
+                print("Fields given by user are not valid for this table")
+                print(disallowed)
+                okay = False
+                return okay, None
+
+        # Step 2: Create a search cursor and extract rows to a "rows" list variable
         try:
-            arcpy.sa.ZonalStatisticsAsTable(
-                self.feature_class, "OBJECTID", raster_path, temp_table, "DATA", statistic_type
-            )
-            print(f"Zonal statistics calculated and stored in '{temp_table}'.")
+            with arcpy.da.SearchCursor(self.feature_class, fields) as cursor:
+                rows = [row for row in cursor]  # Extract all rows
         except Exception as e:
-            print(f"Error calculating zonal statistics: {e}")
-            return False
+            print(f"Error extracting rows with SearchCursor: {e}")
+            okay = False
+            return okay, None
 
-    # Read the zonal statistics table
-        zonal_results = {}
+        # Step 3: Convert to pandas DataFrame
         try:
-            table_count = 0
-            with arcpy.da.SearchCursor(temp_table, ["OBJECTID_1", statistic_type]) as cursor:
-                for row in cursor:
-                    zonal_results[row[0]] = row[1]
-                    table_count += 1
-            print(f"Processed {table_count} zonal stats.")
+            df = pd.DataFrame(rows, columns=fields)
         except Exception as e:
-            print(f"Problem reading the zonal results table: {e}")
-            return False
+            print(f"Error converting to Pandas DataFrame: {e}")
+            okay = False
+            return okay, None
 
-    # Update the feature class with the zonal results
-        print("Joining zonal stats back to Object ID.")
-        try:
-            with arcpy.da.UpdateCursor(self.feature_class, ["OBJECTID", output_field]) as cursor:
-                for row in cursor:
-                    object_id = row[0]
-                    if object_id in zonal_results:
-                        row[1] = zonal_results[object_id]
-                        cursor.updateRow(row)
-            print(f"Zonal stats '{statistic_type}' added to field '{output_field}'.")
-        except Exception as e:
-            print(f"Error updating feature class with zonal stats: {e}")
-            return False
-
-    # Clean up
-        arcpy.management.Delete(temp_table)
-        print(f"Temporary table '{temp_table}' deleted.")
-        return okay
-
-
-#     # Take our vector object and turn it into a pandas dataframe
-
-#     def extract_to_pandas_df(self, fields=None):
-#         # set up tracker variable
-#         okay = True
-
-#         #First, get the list of fields to extract if the user did 
-#         #  not pass them
-
-#         if fields is None: # If the user did not pass anything
-#             # List all field names (excluding geometry)
-#             fields = [f.name for f in arcpy.ListFields(self.feature_class) if f.type not in ('Geometry', 'OID')]
-#         else: 
-#             #check to make sure that the fields given are actually in the table, 
-#             #   and make sure to exclue the geometry and oid.
-
-#             true_fields = [f.name for f in arcpy.ListFields(self.feature_class) if f.type not in ('Geometry', 'OID')]
-
-#             #accumulate the ones that do not match
-#             disallowed = [user_f for user_f in fields if user_f not in true_fields]
-
-#             # if the list is not empty, let the user know
-#             if len(disallowed) != 0:
-#                 print("Fields given by user are not valid for this table")
-#                 print(disallowed)
-#                 okay = False
-#                 return okay, None
-        
-#         # Step 2: Create a search cursor and extract rows
-#         #    to a "rows" list variable.  This is a very short 
-#         #    command -- should be old hat by now!  
-
-#         # vvvvvvvvvvvvvvv
-#         # Your code: 
-
-
-#         # Step 3: Convert to pandas DataFrame
-#         df = pd.DataFrame(rows, columns=fields)
-                
-#         return okay, df
+        return okay, df
 
 
 # Uncomment this when you get to the appropriate block in the scripts
