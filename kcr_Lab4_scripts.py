@@ -163,7 +163,23 @@ smart_vector.save_as("Corvallis_parcels_plusNDVI")
 #  to do.  Most of the functionality is already there
 
 
+from kcr_Lab4_functions import SmartVectorLayer  # Import the SmartVectorLayer class
+import arcpy
+arcpy.env.overwriteOutput = True
+
+# Initialize the SmartVectorLayer object with the correct feature class path
+feature_class_path = r"R:\2025\Spring\GEOG562\Students\rabeky\Lab4\lab4_arcproject_kcr\lab4_arcproject_kcr.gdb\Corvallis_parcels_plusNDVI"
+smart_vector = SmartVectorLayer(feature_class_path)
+
+# Extract data into a Pandas DataFrame
 okay, df = smart_vector.extract_to_pandas_df()
+
+# Check if the extraction was successful
+if okay:
+    print("Data successfully extracted to Pandas DataFrame.")
+    print(df.head())  # Display the first few rows of the DataFrame
+else:
+    print("Failed to extract data to Pandas DataFrame.")
 
 
 # Question 6.1. 
@@ -174,7 +190,9 @@ okay, df = smart_vector.extract_to_pandas_df()
 
 # Your answer
 
-
+# The "fields=None" in the original call to the method means that if no specific fields are provided, the method will extract all fields from the feature class. 
+# In the code, I check if fields is None and then use arcpy.ListFields to get all field names from the feature class. 
+# This allows for flexibility in extracting either specific fields or all fields based on user input. (AI Generated answer)
 
 
 
