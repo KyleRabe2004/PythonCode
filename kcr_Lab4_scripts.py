@@ -192,7 +192,7 @@ else:
 
 # The "fields=None" in the original call to the method means that if no specific fields are provided, the method will extract all fields from the feature class. 
 # In the code, I check if fields is None and then use arcpy.ListFields to get all field names from the feature class. 
-# This allows for flexibility in extracting either specific fields or all fields based on user input. (AI Generated answer)
+# This allows for flexibility in extracting either specific fields or all fields based on user input. 
 
 
 
@@ -227,7 +227,7 @@ sp.scatterplot(x_field, y_field, x_min=1901, x_max = 2030)
 
 
 # Your answer: df_to_plot is a filtered version of the original DataFrame df_to_plot.
-# That line filters the DataFrame df_to_plot to include only the rows where the value in the x_field (YEAR_BUILT) is greater than or equal to x_min (1901). (AI Generated answer)
+# That line filters the DataFrame df_to_plot to include only the rows where the value in the x_field (YEAR_BUILT) is greater than or equal to x_min (1901).
 
 
 
@@ -261,7 +261,7 @@ sp.scatterplot(x_field, y_field, x_min=1901, x_max = 2030)
 #   Here, and you have the name of the file for the control file
 #  Below, simply call the "plot_from_file" method to run the .csv fil
 
-param_file = 'params_1.csv'  #  this assumes you've placed in the 
+param_file = 'params_2.csv'  #  this assumes you've placed in the 
                             # python code directory you're working in here. 
 # Your code:
 
@@ -272,7 +272,8 @@ param_file = 'params_1.csv'  #  this assumes you've placed in the
 ok = sp.plot_from_file(param_file)
 if ok:
     print("Done plotting")
-
+else:
+    print("Plotting failed")
 
 # Now check the output graphic and make sure it worked. 
 
@@ -290,7 +291,8 @@ if ok:
 #    numeric?   How might you make this work better?
 
 # Your answer
-
+# If you give it a field that is not numeric, the scatterplot will likely fail to generate because the plotting function expects numeric values for both x and y axes.
+# To make this work better, you could add a check in the code to ensure that the specified fields are numeric before attempting to create the scatterplot.
 
 
 
@@ -307,7 +309,7 @@ if ok:
 #   Can you describe (in words, no need for code)
 #   how you might achieve that?
 
-# Your answer:
+# Your answer: You might achieve that by modifying the code to automatically generate the output filename based on the x and y field names.
 
 
 
