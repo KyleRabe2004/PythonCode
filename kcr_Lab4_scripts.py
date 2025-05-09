@@ -226,7 +226,8 @@ sp.scatterplot(x_field, y_field, x_min=1901, x_max = 2030)
 #  
 
 
-# Your answer:
+# Your answer: df_to_plot is a filtered version of the original DataFrame df_to_plot.
+# That line filters the DataFrame df_to_plot to include only the rows where the value in the x_field (YEAR_BUILT) is greater than or equal to x_min (1901). (AI Generated answer)
 
 
 
